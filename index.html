@@ -3,107 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>英単語スペルテスト</title>
+<title>英語・漢字テスト</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;}
 .screen{display:none;padding:16px;max-width:600px;margin:0 auto;}
 .screen.active{display:block;}
-h1{font-size:20px;font-weight:600;margin-bottom:16px;color:#1a1a1a;}
+h1{font-size:20px;font-weight:600;margin-bottom:16px;}
 .card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;border:1px solid #e5e5e0;}
 .label{font-size:13px;color:#888;margin-bottom:6px;}
-.big{font-size:24px;font-weight:600;color:#1a1a1a;}
+.big{font-size:24px;font-weight:600;}
 .hint{font-size:14px;color:#888;}
-textarea{width:100%;min-height:120px;font-size:14px;border:1px solid #ddd;border-radius:10px;padding:10px;resize:vertical;font-family:-apple-system,sans-serif;line-height:1.6;}
-textarea:focus{outline:none;border-color:#5DCAA5;}
-.btn{display:block;width:100%;padding:14px;font-size:16px;font-weight:500;border-radius:12px;border:1.5px solid #ccc;background:#fff;color:#1a1a1a;cursor:pointer;text-align:center;transition:background .15s;}
+.btn{display:block;width:100%;padding:14px;font-size:16px;font-weight:500;border-radius:12px;border:1.5px solid #ccc;background:#fff;color:#1a1a1a;cursor:pointer;text-align:center;}
 .btn:active{background:#f0f0ea;}
 .btn-primary{background:#1D9E75;color:#fff;border-color:#1D9E75;}
-.btn-primary:active{background:#0F6E56;}
 .btn-sm{padding:8px 16px;font-size:14px;width:auto;display:inline-block;}
-.btn-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-.btn-row .btn{flex:1;min-width:60px;}
+.n-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .badge{display:inline-block;font-size:13px;font-weight:500;padding:4px 12px;border-radius:8px;}
 .b-ok{background:#E1F5EE;color:#0F6E56;}
 .b-ng{background:#FCEBEB;color:#A32D2D;}
 .b-skip{background:#FEF3CD;color:#856404;}
-.b-info{background:#E6F1FB;color:#185FA5;}
 .prog-wrap{margin-bottom:12px;}
 .prog-bar{height:6px;background:#e5e5e0;border-radius:3px;}
 .prog-fill{height:6px;border-radius:3px;background:#1D9E75;transition:width .3s;}
 .prog-meta{display:flex;justify-content:space-between;font-size:13px;color:#888;margin-bottom:6px;}
 .result-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #f0f0ea;font-size:15px;}
 .result-row:last-child{border-bottom:none;}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:4px;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
 .stat-box{background:#f8f8f4;border-radius:12px;padding:12px 8px;text-align:center;}
 .stat-num{font-size:28px;font-weight:700;}
 .stat-lbl{font-size:12px;color:#888;margin-top:2px;}
 #write-area{
-  width:100%;min-height:120px;border:2px dashed #ccc;border-radius:12px;
+  width:100%;min-height:100px;border:2px dashed #ccc;border-radius:12px;
   padding:12px 14px;font-size:28px;font-weight:400;color:#1a1a1a;
-  background:#fafaf8;-webkit-appearance:none;outline:none;
-  caret-color:#1D9E75;letter-spacing:0.05em;transition:border-color .2s;
-  font-family:-apple-system,sans-serif;
+  background:#fafaf8;outline:none;caret-color:#1D9E75;
+  letter-spacing:0.05em;font-family:-apple-system,sans-serif;
 }
 #write-area:focus{border-color:#1D9E75;background:#fff;}
-#write-area::placeholder{color:#bbb;font-size:16px;font-weight:400;}
-.chip{display:inline-block;background:#E6F1FB;color:#185FA5;border-radius:8px;padding:3px 10px;font-size:13px;margin:3px;}
+#write-area:disabled{background:#f0f0ea;color:#999;}
+#write-area::placeholder{color:#bbb;font-size:16px;}
 .feedback-overlay{border-radius:14px;padding:18px;margin-bottom:14px;text-align:center;}
 .feedback-overlay.ok{background:#E1F5EEcc;border:1.5px solid #5DCAA5;}
 .feedback-overlay.ng{background:#FCEBEBcc;border:1.5px solid #F09595;}
 .feedback-icon{font-size:48px;margin-bottom:8px;}
 .feedback-word{font-size:32px;font-weight:700;letter-spacing:.05em;margin-bottom:6px;}
 .feedback-sub{font-size:14px;color:#555;white-space:pre-line;}
+.mode-active{background:#1D9E75!important;color:#fff!important;border-color:#1D9E75!important;}
 .upload-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;border:1.5px dashed #ccc;border-radius:12px;cursor:pointer;font-size:14px;color:#888;background:#fafaf8;}
-.upload-label:active{background:#f0f0ea;}
-.n-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 </style>
 </head>
 <body>
 
-<!-- ===== 画面1: 単語登録 ===== -->
+<!-- セットアップ画面 -->
 <div id="s-setup" class="screen active">
-  <h1>英単語スペルテスト</h1>
+  <h1>テスト</h1>
 
+  <!-- モード選択 -->
   <div class="card">
-    <p class="label">単語を入力（1行1単語、または「英語,日本語」形式）</p>
-    <textarea id="word-input" placeholder="例：
-beautiful,美しい
-environment,環境
-necessary,必要な
-important,重要な"></textarea>
-    <p style="font-size:12px;color:#aaa;margin-top:6px;">英語だけでもOKです。カンマ区切りで日本語の意味も入れると問題に表示されます。</p>
+    <p class="label" style="margin-bottom:12px;">モードを選んでください</p>
+    <div class="n-btn-row">
+      <button class="btn mode-active" id="btn-en">🔤 英語</button>
+      <button class="btn" id="btn-ja">🈳 漢字</button>
+    </div>
   </div>
 
+  <!-- CSV読み込み -->
   <div class="card">
-    <p class="label" style="margin-bottom:10px;">CSVファイルから読み込む</p>
+    <p class="label" style="margin-bottom:8px;" id="csv-label">英単語CSVを読み込む（英語,日本語）</p>
     <label class="upload-label">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      CSVファイルを選択
-      <input type="file" id="csv-file" accept=".csv,.txt" style="display:none;" onchange="loadCSV(this)">
+      <span id="upload-label-text">CSVファイルを選択</span>
+      <input type="file" id="csv-file" accept=".csv,.txt,text/csv,text/plain" style="display:none;">
     </label>
+    <p id="csv-status" style="font-size:13px;margin-top:8px;min-height:18px;color:#888;"></p>
   </div>
 
-  <div class="card" id="chip-card" style="display:none;">
-    <p class="label">読み込んだ単語 (<span id="word-count">0</span>語)</p>
-    <div id="chip-list"></div>
+  <!-- 収録数 -->
+  <div class="card" style="text-align:center;padding:20px;" id="word-count-card">
+    <p class="label">収録数</p>
+    <p class="big" id="total-count" style="font-size:40px;color:#1D9E75;">—</p>
+    <p class="hint" id="mode-name"></p>
   </div>
 
-  <p id="setup-err" style="font-size:14px;color:#E24B4A;margin-bottom:10px;min-height:18px;"></p>
-
+  <!-- 問題数選択 -->
   <div class="card">
-    <p class="label" style="margin-bottom:10px;">問題数を選んでテスト開始</p>
+    <p class="label" style="margin-bottom:12px;">問題数を選んでテスト開始</p>
     <div class="n-btn-row">
-      <button class="btn btn-primary" onclick="startTest(20)">20問</button>
-      <button class="btn btn-primary" onclick="startTest(30)">30問</button>
-      <button class="btn btn-primary" onclick="startTest(40)">40問</button>
-      <button class="btn btn-primary" onclick="startTest(50)">50問</button>
+      <button class="btn btn-primary" id="start-20">20問</button>
+      <button class="btn btn-primary" id="start-30">30問</button>
+      <button class="btn btn-primary" id="start-40">40問</button>
+      <button class="btn btn-primary" id="start-50">50問</button>
     </div>
-    <button class="btn" onclick="startTest(null)" style="color:#555;font-size:14px;">全問テスト（登録単語すべて）</button>
+    <button class="btn" id="start-all" style="color:#555;font-size:14px;margin-top:8px;">全問テスト</button>
   </div>
+  <p id="setup-err" style="font-size:14px;color:#E24B4A;margin-top:4px;min-height:18px;"></p>
 </div>
 
-<!-- ===== 画面2: テスト ===== -->
+<!-- テスト画面 -->
 <div id="s-test" class="screen">
   <div class="prog-wrap">
     <div class="prog-meta">
@@ -112,335 +108,347 @@ important,重要な"></textarea>
     </div>
     <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
-
   <div class="card" style="text-align:center;padding:20px 16px;">
-    <p class="label">日本語の意味</p>
-    <p class="big" id="q-ja" style="margin-bottom:6px;"></p>
+    <p class="label" id="q-label"></p>
+    <p class="big" id="q-main" style="margin-bottom:6px;font-size:28px;"></p>
     <p class="hint" id="q-hint"></p>
   </div>
-
   <div class="card" id="write-card">
-    <p class="label" style="margin-bottom:10px;">Apple Pencil または指で英語を入力してください</p>
-    <input type="text"
-      id="write-area"
-      placeholder="ここにScribbleで書く、またはタイプ入力"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="off"
-      spellcheck="false"
-      inputmode="text"
-    />
+    <p class="label" id="write-label" style="margin-bottom:10px;"></p>
+    <input type="text" id="write-area"
+      placeholder="ここに書く またはタイプ入力"
+      autocomplete="off" autocorrect="off" autocapitalize="off"
+      spellcheck="false" inputmode="text" />
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-      <span id="auto-hint" style="font-size:12px;color:#bbb;">入力が止まると自動で判定します（3秒）</span>
-      <button class="btn btn-sm" onclick="clearInput()" style="color:#888;">消去</button>
+      <span id="auto-hint" style="font-size:12px;color:#bbb;">3秒止まると自動判定</span>
+      <button class="btn btn-sm" id="clear-btn" style="color:#888;">消去</button>
     </div>
   </div>
-
   <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
-    <button class="btn btn-sm" onclick="skipWord()" style="color:#aaa;border-color:#ddd;">スキップ</button>
+    <button class="btn btn-sm" id="skip-btn" style="color:#aaa;border-color:#ddd;">スキップ</button>
   </div>
-
   <div id="feedback-area" style="display:none;">
     <div class="feedback-overlay" id="fb-overlay">
       <div class="feedback-icon" id="fb-icon"></div>
       <div class="feedback-word" id="fb-word"></div>
       <div class="feedback-sub" id="fb-sub"></div>
     </div>
-    <button class="btn btn-primary" id="next-btn" onclick="nextWord()">次の問題 → <span style="font-size:13px;opacity:.7;">（Enterでも進めます）</span></button>
   </div>
 </div>
 
-<!-- ===== 画面3: 結果 ===== -->
+<!-- 結果画面 -->
 <div id="s-result" class="screen">
   <h1>テスト結果</h1>
-
   <div class="card">
     <div class="stat-grid">
-      <div class="stat-box">
-        <div class="stat-num" id="res-correct" style="color:#0F6E56;"></div>
-        <div class="stat-lbl">正解</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" id="res-wrong" style="color:#A32D2D;"></div>
-        <div class="stat-lbl">不正解</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" id="res-skip" style="color:#856404;"></div>
-        <div class="stat-lbl">スキップ</div>
-      </div>
+      <div class="stat-box"><div class="stat-num" id="res-correct" style="color:#0F6E56;"></div><div class="stat-lbl">正解</div></div>
+      <div class="stat-box"><div class="stat-num" id="res-wrong" style="color:#A32D2D;"></div><div class="stat-lbl">不正解</div></div>
+      <div class="stat-box"><div class="stat-num" id="res-skip" style="color:#856404;"></div><div class="stat-lbl">スキップ</div></div>
     </div>
-    <div style="text-align:center;margin-top:10px;">
+    <div style="text-align:center;">
       <span id="res-pct" style="font-size:22px;font-weight:700;"></span>
       <p class="hint" id="res-msg" style="margin-top:4px;"></p>
     </div>
   </div>
-
-  <div class="card" id="retry-card">
-    <p class="label" style="margin-bottom:10px;">間違えた問題をやり直す</p>
-    <div class="n-btn-row" id="retry-btns"></div>
+  <div class="card" id="retry-card" style="display:none;">
+    <p class="label" style="margin-bottom:10px;">やり直す</p>
+    <div id="retry-btns"></div>
   </div>
-
   <div class="card">
     <p class="label" style="margin-bottom:10px;">結果一覧</p>
     <div id="res-list"></div>
   </div>
-
-  <button class="btn" onclick="goHome()" style="margin-top:4px;color:#555;">最初に戻る</button>
+  <button class="btn" id="home-btn" style="margin-top:4px;color:#555;">最初に戻る</button>
 </div>
 
 <script>
+(function(){
+
+// ===== 音 =====
 function playPinpon(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const t=ctx.currentTime;
-
-    [880,1175,1568].forEach((freq,i)=>{
-      const osc=ctx.createOscillator();
-      const gain=ctx.createGain();
-
-      osc.type='sine';
-      osc.frequency.value=freq;
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      gain.gain.setValueAtTime(0.25,t+i*0.08);
-      gain.gain.exponentialRampToValueAtTime(0.001,t+i*0.08+0.25);
-
-      osc.start(t+i*0.08);
-      osc.stop(t+i*0.08+0.25);
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var t=ctx.currentTime;
+    [{freq:1046,start:0,dur:0.5},{freq:698,start:0.28,dur:0.6}].forEach(function(p){
+      var o=ctx.createOscillator(),g=ctx.createGain();
+      var o2=ctx.createOscillator(),g2=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o2.connect(g2);g2.connect(ctx.destination);
+      o.type='sine';o.frequency.value=p.freq;
+      o2.type='sine';o2.frequency.value=p.freq*2;
+      g.gain.setValueAtTime(0,t+p.start);g.gain.linearRampToValueAtTime(0.7,t+p.start+0.01);g.gain.exponentialRampToValueAtTime(0.001,t+p.start+p.dur);
+      g2.gain.setValueAtTime(0,t+p.start);g2.gain.linearRampToValueAtTime(0.2,t+p.start+0.01);g2.gain.exponentialRampToValueAtTime(0.001,t+p.start+p.dur);
+      o.start(t+p.start);o.stop(t+p.start+p.dur+0.05);
+      o2.start(t+p.start);o2.stop(t+p.start+p.dur+0.05);
     });
   }catch(e){}
 }
 function playBuzz(){
   try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const osc=ctx.createOscillator(),gain=ctx.createGain();
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.type='sawtooth';osc.frequency.value=160;
-    gain.gain.setValueAtTime(0.3,ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);
-    osc.start(ctx.currentTime);osc.stop(ctx.currentTime+0.45);
+    var ctx=new(window.AudioContext||window.webkitAudioContext)();
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sawtooth';o.frequency.value=160;
+    g.gain.setValueAtTime(0.3,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);
+    o.start(ctx.currentTime);o.stop(ctx.currentTime+0.45);
   }catch(e){}
 }
-let words=[], queue=[], cur=0, score=0, results=[];
-let autoTimer=null, judged=false;
-const AUTO_DELAY=3000;
 
+// ===== 状態 =====
+var WORDS=[], queue=[], cur=0, score=0, results=[];
+var autoTimer=null, nextTimer=null, judged=false;
+var currentMode='en';
+var AUTO_DELAY=3000, NEXT_DELAY=2000;
+
+// ===== CSV パース =====
+function parseCSV(text, mode){
+  return text.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+    .split('\n')
+    .map(function(l){return l.trim();})
+    .filter(function(l){return l && l[0]!=='#';})
+    .map(function(l){
+      var parts=l.split(',').map(function(p){return p.trim();});
+      var ne=parts.filter(function(p){return p;});
+      return {col1:ne[0]||'', col2:ne[1]||''};
+    })
+    .filter(function(w){
+      if(mode==='en'){
+        if(!/[a-zA-Z]/.test(w.col1)) return false;
+        w.col1=w.col1.toLowerCase();
+        return w.col2.length>0;
+      } else {
+        if(!w.col1||!w.col2) return false;
+        if(w.col1==='漢字'||w.col1==='読み'||w.col1==='よみ') return false;
+        return true;
+      }
+    });
+}
+
+// ===== 画面切替 =====
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
 
-document.addEventListener('keydown',function(e){
-  if(document.getElementById('s-test').classList.contains('active')){
-    if(e.key==='Enter'||e.key==='ArrowRight'){
-      e.preventDefault();
-      if(judged){ nextWord(); }
-      else { clearTimeout(autoTimer); judgeAnswer(); }
-    }
+function setMode(mode){
+  currentMode=mode;
+  WORDS=[];
+  document.getElementById('btn-en').className='btn'+(mode==='en'?' mode-active':'');
+  document.getElementById('btn-ja').className='btn'+(mode==='ja'?' mode-active':'');
+  document.getElementById('total-count').textContent='—';
+  document.getElementById('csv-status').textContent='';
+  document.getElementById('upload-label-text').textContent='CSVファイルを選択';
+  document.getElementById('setup-err').textContent='';
+  if(mode==='en'){
+    document.getElementById('csv-label').textContent='英単語CSVを読み込む（英語,日本語）';
+    document.getElementById('mode-name').textContent='英単語';
+  } else {
+    document.getElementById('csv-label').textContent='漢字CSVを読み込む（漢字,読み仮名）';
+    document.getElementById('mode-name').textContent='漢字テスト';
   }
-});
-
-function parseWords(text){
-  return text.split('\n')
-    .map(l=>l.trim()).filter(l=>l && !l.startsWith('#'))
-    .map(l=>{
-      const parts=l.split(',');
-      if(parts.length>=2) return {en:parts[0].trim().toLowerCase(), ja:parts[1].trim()};
-      return {en:l.trim().toLowerCase(), ja:''};
-    }).filter(w=>w.en.length>0);
+  document.getElementById('csv-file').value='';
 }
 
-function updateChips(ws){
-  const cl=document.getElementById('chip-list');
-  cl.innerHTML='';
-  ws.forEach(w=>{
-    const c=document.createElement('span');
-    c.className='chip';
-    c.textContent=w.ja?`${w.en}（${w.ja}）`:w.en;
-    cl.appendChild(c);
-  });
-  document.getElementById('word-count').textContent=ws.length;
-  document.getElementById('chip-card').style.display=ws.length?'block':'none';
-}
-
-document.getElementById('word-input').addEventListener('input',function(){
-  updateChips(parseWords(this.value));
-});
-
-function loadCSV(input){
-  const f=input.files[0]; if(!f) return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    document.getElementById('word-input').value=e.target.result;
-    updateChips(parseWords(e.target.result));
+// ===== CSV読み込み =====
+document.getElementById('csv-file').addEventListener('change', function(){
+  var f=this.files[0]; if(!f) return;
+  var status=document.getElementById('csv-status');
+  var labelText=document.getElementById('upload-label-text');
+  status.textContent='読み込み中...'; status.style.color='#888';
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var text=e.target.result;
+    text=text.replace(/^\uFEFF/,'');
+    var ws=parseCSV(text, currentMode);
+    if(ws.length===0){
+      status.textContent='読み取れませんでした。形式を確認してください。';
+      status.style.color='#E24B4A';
+      return;
+    }
+    WORDS=ws;
+    var unit=currentMode==='en'?'語':'問';
+    document.getElementById('total-count').textContent=WORDS.length+unit;
+    labelText.textContent=f.name;
+    status.textContent='✓ '+WORDS.length+unit+'を読み込みました';
+    status.style.color='#0F6E56';
+    document.getElementById('setup-err').textContent='';
+  };
+  reader.onerror=function(){
+    status.textContent='読み込みに失敗しました。';
+    status.style.color='#E24B4A';
   };
   reader.readAsText(f,'UTF-8');
-}
+  this.value='';
+});
 
-function shuffle(a){
-  let b=[...a];
-  for(let i=b.length-1;i>0;i--){
-    let j=Math.floor(Math.random()*(i+1));
-    [b[i],b[j]]=[b[j],b[i]];
-  }
-  return b;
-}
-
+// ===== テスト開始 =====
 function startTest(n){
-  const ws=parseWords(document.getElementById('word-input').value);
-  const err=document.getElementById('setup-err');
-  if(ws.length<1){err.textContent='単語を1つ以上入力してください';return;}
-  if(n!==null && ws.length<n){
-    err.textContent=`登録単語が${ws.length}語しかありません。${ws.length}語でテストします。`;
-    n=ws.length;
-  } else {
-    err.textContent='';
+  if(WORDS.length===0){
+    document.getElementById('setup-err').textContent='まずCSVを読み込んでください。';
+    return;
   }
-  words=ws;
-  queue=shuffle([...words]).slice(0, n===null ? words.length : n);
-  cur=0; score=0; results=[];
+  var shuffled=shuffle(WORDS.slice());
+  queue=n===null?shuffled:shuffled.slice(0,Math.min(n,WORDS.length));
+  cur=0;score=0;results=[];
   show('s-test');
   showWord();
 }
 
+function shuffle(a){
+  for(var i=a.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=a[i];a[i]=a[j];a[j]=tmp;
+  }
+  return a;
+}
+
+// ===== 問題表示 =====
 function showWord(){
-  const w=queue[cur];
+  var w=queue[cur];
   judged=false;
-  clearTimeout(autoTimer);
-  document.getElementById('q-ja').textContent=w.ja||w.en;
-  document.getElementById('q-hint').textContent=w.ja?`文字数のヒント: ${w.en.length}文字`:'';
-  document.getElementById('prog-txt').textContent=`${cur+1} / ${queue.length}問`;
-  document.getElementById('score-txt').textContent=`正解: ${score}`;
-  document.getElementById('prog-fill').style.width=`${Math.round(cur/queue.length*100)}%`;
-  const wa=document.getElementById('write-area');
-  wa.value=''; wa.disabled=false;
+  clearTimeout(autoTimer);clearTimeout(nextTimer);
+  if(currentMode==='en'){
+    document.getElementById('q-label').textContent='日本語の意味';
+    document.getElementById('q-main').textContent=w.col2||w.col1;
+    document.getElementById('q-hint').textContent='文字数: '+w.col1.length+'文字';
+    document.getElementById('write-label').textContent='英語でスペルを書いてください';
+  } else {
+    document.getElementById('q-label').textContent='読み仮名';
+    document.getElementById('q-main').textContent=w.col2;
+    document.getElementById('q-hint').textContent='漢字: '+w.col1.length+'文字';
+    document.getElementById('write-label').textContent='漢字を書いてください';
+  }
+  document.getElementById('prog-txt').textContent=(cur+1)+' / '+queue.length+'問';
+  document.getElementById('score-txt').textContent='正解: '+score;
+  document.getElementById('prog-fill').style.width=Math.round(cur/queue.length*100)+'%';
+  var wa=document.getElementById('write-area');
+  wa.value='';wa.disabled=false;
   document.getElementById('feedback-area').style.display='none';
   document.getElementById('write-card').style.display='block';
-  document.getElementById('auto-hint').textContent='入力が止まると自動で判定します（3秒）';
-  setTimeout(()=>wa.focus(),100);
-
+  document.getElementById('auto-hint').textContent='3秒止まると自動判定';
+  setTimeout(function(){wa.focus();},100);
   wa.oninput=function(){
     clearTimeout(autoTimer);
     if(judged||!wa.value.trim()) return;
     document.getElementById('auto-hint').textContent='…判定まで3秒';
-    autoTimer=setTimeout(()=>judgeAnswer(), AUTO_DELAY);
+    autoTimer=setTimeout(judgeAnswer, AUTO_DELAY);
   };
 }
 
 function clearInput(){
   clearTimeout(autoTimer);
-  const wa=document.getElementById('write-area');
-  wa.value='';
-  wa.focus();
-  document.getElementById('auto-hint').textContent='入力が止まると自動で判定します（3秒）';
+  var wa=document.getElementById('write-area');
+  wa.value='';wa.focus();
+  document.getElementById('auto-hint').textContent='3秒止まると自動判定';
 }
 
+// ===== 判定 =====
 function judgeAnswer(){
   if(judged) return;
-  const w=queue[cur];
-  const raw=document.getElementById('write-area').value.trim();
-  const ans=raw.replace(/[^a-zA-Z]/g,'').toLowerCase();
+  var w=queue[cur];
+  var ans=document.getElementById('write-area').value.trim();
+  if(currentMode==='en') ans=ans.toLowerCase().replace(/[^a-z'\s]/g,'');
   if(!ans) return;
-
   judged=true;
   clearTimeout(autoTimer);
   document.getElementById('write-area').disabled=true;
   document.getElementById('write-card').style.display='none';
-
-  const correct=ans===w.en;
-  if(correct){ score++; playPinpon(); } else { playBuzz(); }
-  results.push({word:w, ans, correct, skipped:false});
-
-  const overlay=document.getElementById('fb-overlay');
+  var correct=currentMode==='en' ? ans===w.col1 : ans===w.col1;
+  if(correct){score++;playPinpon();}else{playBuzz();}
+  results.push({word:w,ans:ans,correct:correct,skipped:false});
+  var overlay=document.getElementById('fb-overlay');
   overlay.className='feedback-overlay '+(correct?'ok':'ng');
   document.getElementById('fb-icon').textContent=correct?'○':'✗';
-  document.getElementById('fb-word').textContent=w.en;
+  document.getElementById('fb-word').textContent=w.col1;
   document.getElementById('fb-sub').textContent=correct
     ?'正しく書けました！'
-    :`正しいスペル: ${w.en}\nあなたの答え: ${ans}`;
+    :'正しい答え: '+w.col1+'\nあなたの答え: '+ans;
   document.getElementById('feedback-area').style.display='block';
-  document.getElementById('next-btn').focus();
+  nextTimer=setTimeout(function(){advance();}, NEXT_DELAY);
 }
 
 function skipWord(){
-  results.push({word:queue[cur], ans:'(スキップ)', correct:false, skipped:true});
+  clearTimeout(autoTimer);clearTimeout(nextTimer);
+  results.push({word:queue[cur],ans:'(スキップ)',correct:false,skipped:true});
   advance();
 }
+function advance(){cur++;if(cur>=queue.length)showResult();else showWord();}
 
-function nextWord(){advance();}
+// ===== キーボード =====
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('s-test').classList.contains('active')){
+    if(e.key==='Enter'||e.key==='ArrowRight'){
+      e.preventDefault();
+      if(judged){clearTimeout(nextTimer);advance();}
+      else{clearTimeout(autoTimer);judgeAnswer();}
+    }
+  }
+});
 
-function advance(){
-  cur++;
-  if(cur>=queue.length) showResult();
-  else showWord();
-}
-
+// ===== 結果 =====
 function showResult(){
   show('s-result');
-  const total=results.length;
-  const correctCount=results.filter(r=>r.correct).length;
-  const skipCount=results.filter(r=>r.skipped).length;
-  const wrongCount=results.filter(r=>!r.correct && !r.skipped).length;
-  const pct=Math.round(correctCount/total*100);
-
+  var correctCount=results.filter(function(r){return r.correct;}).length;
+  var skipCount=results.filter(function(r){return r.skipped;}).length;
+  var wrongCount=results.filter(function(r){return !r.correct&&!r.skipped;}).length;
+  var pct=Math.round(correctCount/results.length*100);
   document.getElementById('res-correct').textContent=correctCount;
   document.getElementById('res-wrong').textContent=wrongCount;
   document.getElementById('res-skip').textContent=skipCount;
-  document.getElementById('res-pct').textContent=`正解率 ${pct}%`;
-  let msg=pct>=90?'すごい！ほぼ完璧です！':pct>=70?'よくできました！':pct>=50?'もう少し練習しましょう！':'苦手な単語を重点的に練習しよう！';
-  document.getElementById('res-msg').textContent=msg;
-
-  // やり直しボタン
-  const wrongWords=results.filter(r=>!r.correct && !r.skipped).map(r=>r.word);
-  const skipWords=results.filter(r=>r.skipped).map(r=>r.word);
-  const allBadWords=results.filter(r=>!r.correct).map(r=>r.word);
-  const rb=document.getElementById('retry-btns');
+  document.getElementById('res-pct').textContent='正解率 '+pct+'%';
+  document.getElementById('res-msg').textContent=pct>=90?'すごい！ほぼ完璧！':pct>=70?'よくできました！':pct>=50?'もう少し練習しよう！':'苦手な問題を重点練習しよう！';
+  var wrongWords=results.filter(function(r){return !r.correct&&!r.skipped;}).map(function(r){return r.word;});
+  var skipWords=results.filter(function(r){return r.skipped;}).map(function(r){return r.word;});
+  var allBad=results.filter(function(r){return !r.correct;}).map(function(r){return r.word;});
+  var rb=document.getElementById('retry-btns');
   rb.innerHTML='';
-  const rc=document.getElementById('retry-card');
-
-  function makeRetryBtn(label, wList){
-    if(wList.length===0) return;
-    const b=document.createElement('button');
-    b.className='btn';
-    b.textContent=label+`（${wList.length}語）`;
-    b.onclick=()=>retryWith(wList);
+  function makeBtn(label,wList){
+    if(!wList.length) return;
+    var b=document.createElement('button');
+    b.className='btn';b.style.marginBottom='8px';
+    b.textContent=label+'（'+wList.length+'問）';
+    b.addEventListener('click',function(){retryWith(wList);});
     rb.appendChild(b);
   }
-
-  makeRetryBtn('間違えた問題をやり直す', wrongWords);
-  makeRetryBtn('スキップした問題をやり直す', skipWords);
-  if(wrongWords.length>0 && skipWords.length>0){
-    makeRetryBtn('間違い＋スキップをまとめてやり直す', allBadWords);
-  }
-  rc.style.display=allBadWords.length>0?'block':'none';
-
-  // 結果一覧
-  const list=document.getElementById('res-list');
+  makeBtn('間違えた問題をやり直す',wrongWords);
+  makeBtn('スキップした問題をやり直す',skipWords);
+  if(wrongWords.length>0&&skipWords.length>0) makeBtn('間違い＋スキップをまとめてやり直す',allBad);
+  document.getElementById('retry-card').style.display=allBad.length?'block':'none';
+  var list=document.getElementById('res-list');
   list.innerHTML='';
-  results.forEach(r=>{
-    const row=document.createElement('div');
+  results.forEach(function(r){
+    var row=document.createElement('div');
     row.className='result-row';
-    let badge, color;
-    if(r.correct){      badge='<span class="badge b-ok">○</span>'; color='#0F6E56';}
-    else if(r.skipped){ badge='<span class="badge b-skip">－</span>'; color='#856404';}
-    else{               badge='<span class="badge b-ng">✗</span>'; color='#A32D2D';}
-    const ja=r.word.ja?`<span style="color:#888;font-size:13px;">${r.word.ja}</span>`:'';
-    row.innerHTML=`${badge}<span style="flex:1;">${ja}</span><span style="font-weight:600;color:${color};">${r.word.en}</span>`;
+    var badge,color;
+    if(r.correct){badge='<span class="badge b-ok">○</span>';color='#0F6E56';}
+    else if(r.skipped){badge='<span class="badge b-skip">－</span>';color='#856404';}
+    else{badge='<span class="badge b-ng">✗</span>';color='#A32D2D';}
+    var q=currentMode==='en'?r.word.col2:r.word.col2;
+    var ans=r.word.col1;
+    row.innerHTML=badge+'<span style="flex:1;color:#888;font-size:13px;">'+q+'</span><span style="font-weight:600;color:'+color+';">'+ans+'</span>';
     list.appendChild(row);
   });
 }
+function retryWith(wList){queue=shuffle(wList.slice());cur=0;score=0;results=[];show('s-test');showWord();}
 
-function retryWith(wList){
-  queue=shuffle([...wList]);
-  cur=0; score=0; results=[];
-  show('s-test');
-  showWord();
-}
+// ===== イベント設定 =====
+document.getElementById('btn-en').addEventListener('click',function(){setMode('en');});
+document.getElementById('btn-ja').addEventListener('click',function(){setMode('ja');});
+document.getElementById('start-20').addEventListener('click',function(){startTest(20);});
+document.getElementById('start-30').addEventListener('click',function(){startTest(30);});
+document.getElementById('start-40').addEventListener('click',function(){startTest(40);});
+document.getElementById('start-50').addEventListener('click',function(){startTest(50);});
+document.getElementById('start-all').addEventListener('click',function(){startTest(null);});
+document.getElementById('clear-btn').addEventListener('click',clearInput);
+document.getElementById('skip-btn').addEventListener('click',skipWord);
+document.getElementById('home-btn').addEventListener('click',function(){show('s-setup');});
 
-function goHome(){show('s-setup');}
+// 初期化
+setMode('en');
+
+})();
 </script>
 </body>
 </html>
