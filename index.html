@@ -97,6 +97,7 @@ h1{font-size:20px;font-weight:600;margin-bottom:16px;}
     <button class="btn" id="start-all" style="color:#555;font-size:14px;margin-top:8px;">全問テスト</button>
   </div>
   <p id="setup-err" style="font-size:14px;color:#E24B4A;margin-top:4px;min-height:18px;"></p>
+  <button class="btn" id="history-btn" style="margin-top:4px;color:#555;font-size:14px;">📋 テスト履歴を見る</button>
 </div>
 
 <!-- テスト画面 -->
@@ -158,7 +159,20 @@ h1{font-size:20px;font-weight:600;margin-bottom:16px;}
     <p class="label" style="margin-bottom:10px;">結果一覧</p>
     <div id="res-list"></div>
   </div>
-  <button class="btn" id="home-btn" style="margin-top:4px;color:#555;">最初に戻る</button>
+  <div style="display:flex;gap:10px;margin-top:4px;">
+    <button class="btn" id="dl-btn" style="flex:1;color:#185FA5;border-color:#185FA5;">📥 結果をCSV保存</button>
+    <button class="btn" id="home-btn" style="flex:1;color:#555;">最初に戻る</button>
+  </div>
+</div>
+
+<!-- 履歴画面 -->
+<div id="s-history" class="screen">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <button class="btn btn-sm" id="history-back-btn" style="color:#555;width:auto;">← 戻る</button>
+    <h1 style="margin:0;">テスト履歴</h1>
+  </div>
+  <div id="history-list"></div>
+  <button class="btn" id="clear-history-btn" style="margin-top:8px;color:#E24B4A;border-color:#E24B4A;font-size:14px;">履歴をすべて削除</button>
 </div>
 
 <script>
@@ -381,6 +395,7 @@ document.addEventListener('keydown',function(e){
 // ===== 結果 =====
 function showResult(){
   show('s-result');
+  saveHistory();
   var correctCount=results.filter(function(r){return r.correct;}).length;
   var skipCount=results.filter(function(r){return r.skipped;}).length;
   var wrongCount=results.filter(function(r){return !r.correct&&!r.skipped;}).length;
@@ -435,6 +450,90 @@ document.getElementById('start-all').addEventListener('click',function(){startTe
 document.getElementById('clear-btn').addEventListener('click',clearInput);
 document.getElementById('skip-btn').addEventListener('click',skipWord);
 document.getElementById('home-btn').addEventListener('click',function(){show('s-setup');});
+document.getElementById('dl-btn').addEventListener('click',downloadCSV);
+document.getElementById('history-btn').addEventListener('click',showHistory);
+document.getElementById('history-back-btn').addEventListener('click',function(){show('s-setup');});
+document.getElementById('clear-history-btn').addEventListener('click',function(){
+  if(confirm('履歴をすべて削除しますか？')){
+    localStorage.removeItem('test_history');
+    showHistory();
+  }
+});
+
+// ===== 履歴 =====
+function saveHistory(){
+  var correctCount=results.filter(function(r){return r.correct;}).length;
+  var skipCount=results.filter(function(r){return r.skipped;}).length;
+  var pct=Math.round(correctCount/results.length*100);
+  var now=new Date();
+  var dateStr=now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' '+now.getHours()+':'+('0'+now.getMinutes()).slice(-2);
+  var entry={
+    date:dateStr,
+    mode:currentMode==='en'?'英語':'漢字',
+    total:results.length,
+    correct:correctCount,
+    skip:skipCount,
+    pct:pct,
+    detail:results.map(function(r){
+      return {q:currentMode==='en'?r.word.col2:r.word.col2, ans:r.word.col1, your:r.ans, ok:r.correct, skip:r.skipped};
+    })
+  };
+  var hist=JSON.parse(localStorage.getItem('test_history')||'[]');
+  hist.unshift(entry);
+  if(hist.length>50) hist=hist.slice(0,50);
+  localStorage.setItem('test_history',JSON.stringify(hist));
+}
+
+function showHistory(){
+  show('s-history');
+  var hist=JSON.parse(localStorage.getItem('test_history')||'[]');
+  var list=document.getElementById('history-list');
+  if(hist.length===0){
+    list.innerHTML='<div class="card"><p style="color:var(--color-text-secondary);text-align:center;padding:20px;">まだ履歴がありません</p></div>';
+    return;
+  }
+  list.innerHTML='';
+  hist.forEach(function(h,i){
+    var card=document.createElement('div');
+    card.className='card';
+    card.style.marginBottom='10px';
+    var color=h.pct>=90?'#0F6E56':h.pct>=70?'#185FA5':'#A32D2D';
+    card.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+      +'<span style="font-size:13px;color:#888;">'+h.date+'　'+h.mode+'</span>'
+      +'<span style="font-size:20px;font-weight:700;color:'+color+';">'+h.pct+'%</span>'
+      +'</div>'
+      +'<div style="display:flex;gap:12px;font-size:14px;">'
+      +'<span>全'+h.total+'問</span>'
+      +'<span style="color:#0F6E56;">正解 '+h.correct+'</span>'
+      +'<span style="color:#A32D2D;">不正解 '+(h.total-h.correct-h.skip)+'</span>'
+      +'<span style="color:#856404;">スキップ '+h.skip+'</span>'
+      +'</div>';
+    list.appendChild(card);
+  });
+}
+
+function downloadCSV(){
+  var correctCount=results.filter(function(r){return r.correct;}).length;
+  var skipCount=results.filter(function(r){return r.skipped;}).length;
+  var pct=Math.round(correctCount/results.length*100);
+  var now=new Date();
+  var dateStr=now.getFullYear()+'-'+(now.getMonth()+1)+'-'+now.getDate()+'_'+now.getHours()+('0'+now.getMinutes()).slice(-2);
+  var lines=['﻿日付,モード,問題数,正解,不正解,スキップ,正解率'];
+  lines.push('"'+dateStr+'","'+(currentMode==='en'?'英語':'漢字')+'",'+results.length+','+correctCount+','+(results.length-correctCount-skipCount)+','+skipCount+','+pct+'%');
+  lines.push('');
+  lines.push('﻿問題,正解,あなたの答え,結果');
+  results.forEach(function(r){
+    var q=currentMode==='en'?r.word.col2:r.word.col2;
+    var ans=r.word.col1;
+    var result=r.correct?'正解':r.skipped?'スキップ':'不正解';
+    lines.push('"'+q+'","'+ans+'","'+r.ans+'","'+result+'"');
+  });
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='test_result_'+dateStr+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
 
 // 初期化
 setMode('en');
