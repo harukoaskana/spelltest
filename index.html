@@ -318,8 +318,8 @@ function showWord(){
   wa.oninput=function(){
     clearTimeout(autoTimer);
     if(judged||!wa.value.trim()) return;
-    document.getElementById('auto-hint').textContent='…判定まで3秒';
-    autoTimer=setTimeout(judgeAnswer, AUTO_DELAY);
+    document.getElementById('auto-hint').textContent='…判定まで2秒';
+    autoTimer=setTimeout(judgeAnswer, 2000);
   };
 }
 
@@ -365,10 +365,15 @@ function advance(){cur++;if(cur>=queue.length)showResult();else showWord();}
 // ===== キーボード =====
 document.addEventListener('keydown',function(e){
   if(document.getElementById('s-test').classList.contains('active')){
-    if(e.key==='Enter'||e.key==='ArrowRight'){
+    if(e.key==='ArrowRight'){
       e.preventDefault();
       if(judged){clearTimeout(nextTimer);advance();}
       else{clearTimeout(autoTimer);judgeAnswer();}
+    }
+    if(e.key==='Enter'){
+      e.preventDefault();
+      if(judged){clearTimeout(nextTimer);advance();}
+      // Enterは自動判定に任せる（Scribble確定キーと競合するため）
     }
   }
 });
