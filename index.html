@@ -318,8 +318,8 @@ function showWord(){
   wa.oninput=function(){
     clearTimeout(autoTimer);
     if(judged||!wa.value.trim()) return;
-    document.getElementById('auto-hint').textContent='…判定まで2秒';
-    autoTimer=setTimeout(judgeAnswer, 2000);
+    document.getElementById('auto-hint').textContent='…判定まで1秒';
+    autoTimer=setTimeout(judgeAnswer, 1000);
   };
 }
 
