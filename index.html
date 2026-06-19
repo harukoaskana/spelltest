@@ -332,8 +332,11 @@ function showWord(){
   wa.oninput=function(){
     clearTimeout(autoTimer);
     if(judged||!wa.value.trim()) return;
-    document.getElementById('auto-hint').textContent='…判定まで1秒';
-    autoTimer=setTimeout(judgeAnswer, 1000);
+    var wlen=queue[cur].col1.length;
+    var delay=wlen<=3?1000:wlen<=6?2000:5000;
+    var delaySec=wlen<=3?1:wlen<=6?2:5;
+    document.getElementById('auto-hint').textContent='…判定まで'+delaySec+'秒';
+    autoTimer=setTimeout(judgeAnswer, delay);
   };
 }
 
