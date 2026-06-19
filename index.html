@@ -390,7 +390,10 @@ document.addEventListener('keydown',function(e){
     if(e.key==='Enter'){
       e.preventDefault();
       if(judged){clearTimeout(nextTimer);advance();}
-      // Enterは自動判定に任せる（Scribble確定キーと競合するため）
+      else{
+        var val=document.getElementById('write-area').value.trim();
+        if(val){clearTimeout(autoTimer);judgeAnswer();}
+      }
     }
   }
 });
